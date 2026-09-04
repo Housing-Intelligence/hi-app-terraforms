@@ -3,9 +3,13 @@
 set -euo pipefail
 
 AIRFLOW_HOME="/opt/airflow"
+export AIRFLOW_HOME
 
 ECR_REPOSITORY="${ECR_REPOSITORY:?ECR_REPOSITORY is required}"
 AIRFLOW_IMAGE_TAG="${AIRFLOW_IMAGE_TAG:?AIRFLOW_IMAGE_TAG is required}"
+
+AIRFLOW_SECRET_ID="${AIRFLOW_SECRET_ID:?AIRFLOW_SECRET_ID is required}"
+export AIRFLOW_SECRET_ID
 
 log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"
@@ -84,6 +88,10 @@ get_instance_metadata() {
     AWS_ACCOUNT_ID=$(echo "${IDENTITY_DOCUMENT}" | jq -r '.accountId')
     INSTANCE_ID=$(echo "${IDENTITY_DOCUMENT}" | jq -r '.instanceId')
 
+    export AWS_REGION
+    export AWS_ACCOUNT_ID
+    export INSTANCE_ID
+
     log "Region: ${AWS_REGION}"
     log "Account: ${AWS_ACCOUNT_ID}"
     log "Instance ID: ${INSTANCE_ID}"
@@ -96,6 +104,8 @@ build_ecr_image() {
     ECR_REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
 
     AIRFLOW_IMAGE="${ECR_REGISTRY}/${ECR_REPOSITORY}:${AIRFLOW_IMAGE_TAG}"
+
+    export AIRFLOW_IMAGE
 
     log "ECR Registry: ${ECR_REGISTRY}"
     log "Airflow Image: ${AIRFLOW_IMAGE}"
@@ -129,6 +139,15 @@ create_workspace() {
     log "Airflow workspace created"
 }
 
+render_environment() {
+
+    log "Rendering Airflow environment..."
+
+    "${AIRFLOW_HOME}/scripts/render-env.sh"
+
+    log "Airflow environment rendered"
+}
+
 main() {
 
     log "Starting Airflow EC2 bootstrap..."
@@ -146,6 +165,8 @@ main() {
     build_ecr_image
 
     create_workspace
+
+    render_environment
 
     log "Airflow EC2 bootstrap completed successfully."
 }
