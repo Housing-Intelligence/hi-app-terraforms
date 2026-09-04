@@ -1,0 +1,1 @@
+# Generate environment variables for Airflow
