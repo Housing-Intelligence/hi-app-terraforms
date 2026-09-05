@@ -2,6 +2,8 @@
 
 # create admin and api user
 
+# db migrationsß
+
 # create pool
 
 # create connections
@@ -10,7 +12,7 @@
 
 # sync Dags
 
-# sync FAB
+# sync FAB perm
 
 # bootstrap custom roles
 

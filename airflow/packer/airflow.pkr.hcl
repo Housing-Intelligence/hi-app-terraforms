@@ -23,7 +23,7 @@ source "amazon-ebs" "airflow" {
 
   ami_name = "${var.ami_name}-${formatdate("YYYYMMDD-hhmmss", timestamp())}"
 
-  instance_type = "t3.medium"
+  instance_type = "t3.small"
 
   source_ami_filter {
     filters = {
@@ -65,7 +65,6 @@ build {
     ]
   }
 
-  # 3. 创建 Airflow 目录
   provisioner "shell" {
     inline = [
       "sudo mkdir -p /opt/airflow/scripts",
