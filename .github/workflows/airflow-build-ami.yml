@@ -24,7 +24,7 @@ jobs:
             -d '{
               "ref": "main",
               "inputs": {
-                "target_repository": "Housing-Intelligence/hi-network-infra",
+                "target_repository": "Housing-Intelligence/hi-app-terraforms",
                 "packer_directory": "airflow/packer",
                 "aws_region": "us-east-2",
                 "ami_name": "airflow-master"
