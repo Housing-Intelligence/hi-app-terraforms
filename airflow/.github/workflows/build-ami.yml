@@ -1,0 +1,34 @@
+name: Network Infrastructure
+
+on:
+  workflow_dispatch:
+
+jobs:
+  trigger-airflow-ami-build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Trigger airflow AMI build
+        env:
+          GH_TOKEN: ${{ secrets.CICD_TRIGGER_TOKEN }}
+        run: |
+          curl -L \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "X-GitHub-Api-Version: 2026-03-10" \
+            https://api.github.com/repos/Housing-Intelligence/hi-platform-cicd/actions/workflows/build-ami.yml/dispatches \
+            -d '{
+              "ref": "main",
+              "inputs": {
+                "target_repository": "Housing-Intelligence/hi-network-infra",
+                "terraform_directory": "terraform/environments",
+                "packer_directory": "airflow/packer",
+                "aws_region": "us-east-2",
+                "environment": "dev",
+                "vpc_cidr": "10.0.0.0/16"
+              }
+            }'

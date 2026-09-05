@@ -15,61 +15,6 @@ log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"
 }
 
-# Install Docker
-
-install_docker() {
-
-    log "Checking Docker..."
-
-    if command -v docker >/dev/null 2>&1; then
-        log "Docker already installed"
-    else
-        log "Installing Docker..."
-
-        dnf install -y docker
-
-        systemctl enable docker
-        systemctl start docker
-    fi
-
-    if ! systemctl is-active --quiet docker; then
-        log "Docker is not running"
-        exit 1
-    fi
-
-    log "Docker is ready"
-}
-
-# Install dependencies
-
-install_dependencies() {
-
-    log "Installing dependencies..."
-
-    dnf install -y \
-        jq \
-        unzip \
-        curl
-
-    log "Dependencies installed"
-}
-
-# Check AWS CLI
-
-check_aws_cli() {
-
-    log "Checking AWS CLI..."
-
-    if ! command -v aws >/dev/null 2>&1; then
-        log "AWS CLI is not installed"
-        exit 1
-    fi
-
-    aws --version
-
-    log "AWS CLI is available"
-}
-
 # Get EC2 Metadata
 
 get_instance_metadata() {
@@ -122,23 +67,6 @@ check_aws_identity() {
     log "AWS identity check passed"
 }
 
-# Create Airflow Workspace
-
-create_workspace() {
-
-    log "Creating Airflow workspace..."
-
-    mkdir -p \
-        "${AIRFLOW_HOME}/dags" \
-        "${AIRFLOW_HOME}/logs" \
-        "${AIRFLOW_HOME}/plugins" \
-        "${AIRFLOW_HOME}/config"
-
-    chmod 755 "${AIRFLOW_HOME}"
-
-    log "Airflow workspace created"
-}
-
 render_environment() {
 
     log "Rendering Airflow environment..."
@@ -152,19 +80,11 @@ main() {
 
     log "Starting Airflow EC2 bootstrap..."
 
-    install_docker
-
-    install_dependencies
-
-    check_aws_cli
-
     get_instance_metadata
 
     check_aws_identity
 
     build_ecr_image
-
-    create_workspace
 
     render_environment
 
