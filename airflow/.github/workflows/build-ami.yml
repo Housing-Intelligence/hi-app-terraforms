@@ -1,4 +1,4 @@
-name: Network Infrastructure
+name: Build Airflow AMI
 
 on:
   workflow_dispatch:
