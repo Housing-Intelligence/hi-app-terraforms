@@ -54,7 +54,7 @@ build {
   provisioner "shell" {
     inline = [
       "sudo dnf update -y",
-      "sudo dnf install -y docker awscli jq curl unzip"
+      "sudo dnf install -y docker awscli jq unzip"
     ]
   }
 
