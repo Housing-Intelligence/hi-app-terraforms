@@ -2,6 +2,14 @@ name: Build Airflow AMI
 
 on:
   workflow_dispatch:
+    inputs:
+      target_app:
+        description: "Target application, eg: airflow, backend"
+        required: true
+        type: choice
+        options:
+          - airflow
+            backend
 
 jobs:
   trigger-airflow-ami-build:
