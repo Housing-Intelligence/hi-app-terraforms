@@ -3,20 +3,47 @@ name: Build Airflow Image
 on:
   workflow_dispatch:
     inputs:
-      repository_name:
-        description: "Repository name for ECR"
+      target_app:
+        description: "Target application, eg: airflow, backend"
+        required: true
+        type: choice
+        options:
+          - airflow
+            backend
+
+      image_tags:
+        description: "Docker image tags, comma-separated, e.g. latest,3.3.1,abc123"
         required: true
         type: string
+        default: "${{ github.sha }}"
 
 jobs:
-  creat-ecr:
+  trigger-airflow-docker-build:
     runs-on: ubuntu-latest
 
     permissions:
       contents: read
 
     steps:
-      - name: Create ECR repository
+      - name: Trigger docker build and promote to ecr
+        env:
+          GH_TOKEN: ${{ secrets.CICD_TRIGGER_TOKEN }}
         run: |
-          aws ecr create-repository --repository-name ${{ inputs.repository_name }} || echo "Repository already exists"
+          curl -L \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "X-GitHub-Api-Version: 2026-03-10" \
+            https://api.github.com/repos/Housing-Intelligence/hi-platform-cicd/actions/workflows/docker-build-push-ecr.yml/dispatches \
+            -d '{
+              "ref": "main",
+              "inputs": {
+                "target_repository": "Housing-Intelligence/hi-app-terraforms",
+                "docker_directory": "${{ inputs.target_app }}/docker",
+                "aws_region": "us-east-2",
+                "image_name": "${{ inputs.target_app }}",
+                "image_tags": "${{ inputs.image_tags }}"
+              }
+            }'
+    
         
