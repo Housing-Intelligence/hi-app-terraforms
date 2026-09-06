@@ -76,6 +76,11 @@ build {
   }
 
   provisioner "file" {
+    source      = "../docker/docker-compose.yml"
+    destination = "/tmp/docker-compose.yml"
+  }
+
+  provisioner "file" {
     source      = "${path.root}/../scripts/ec2-bootstrap.sh"
     destination = "/tmp/ec2-bootstrap.sh"
   }
@@ -89,6 +94,7 @@ build {
     inline = [
       "sudo mv /tmp/ec2-bootstrap.sh /opt/airflow/scripts/ec2-bootstrap.sh",
       "sudo mv /tmp/render-env.sh /opt/airflow/scripts/render-env.sh",
+      "sudo mv /tmp/docker-compose.yml /opt/airflow/docker-compose.yml",
 
       "sudo chmod 755 /opt/airflow/scripts/ec2-bootstrap.sh",
       "sudo chmod 755 /opt/airflow/scripts/render-env.sh",

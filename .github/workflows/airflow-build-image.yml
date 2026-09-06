@@ -1,0 +1,22 @@
+name: Build Airflow Image
+
+on:
+  workflow_dispatch:
+    inputs:
+      repository_name:
+        description: "Repository name for ECR"
+        required: true
+        type: string
+
+jobs:
+  creat-ecr:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Create ECR repository
+        run: |
+          aws ecr create-repository --repository-name ${{ inputs.repository_name }} || echo "Repository already exists"
+        

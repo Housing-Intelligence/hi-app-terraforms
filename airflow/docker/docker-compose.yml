@@ -1,0 +1,53 @@
+services:
+
+  airflow-init:
+    image: ${AIRFLOW_IMAGE}
+    env_file:
+      - .env
+
+    volumes:
+      - ./scripts:/opt/airflow/scripts
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+
+    command:
+      - /bin/bash
+      - -c
+      - |
+        /opt/airflow/scripts/wait-for-db.sh
+        /opt/airflow/scripts/airflow-init.sh
+
+  airflow-webserver:
+    image: ${AIRFLOW_IMAGE}
+    env_file:
+      - .env
+
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+
+    ports:
+      - "8080:8080"
+
+    command:
+      - webserver
+
+  airflow-scheduler:
+    image: ${AIRFLOW_IMAGE}
+    env_file:
+      - .env
+
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+
+    command:
+      - scheduler
