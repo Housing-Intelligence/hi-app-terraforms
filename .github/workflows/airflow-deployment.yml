@@ -7,6 +7,16 @@ on:
         description: "Terraform workspace, e.g. airflow-dev-01"
         required: true
         type: string
+      airflow_image_tag:
+        description: "Airflow Docker image tag, e.g. latest or 3.3.1"
+        required: true
+        type: string
+        default: "latest"
+      airflow_ami_id:
+        description: "Airflow AMI ID, e.g. ami-xxxxxxxx"
+        required: true
+        type: string
+        default: "airflow-master"
 
 jobs:
   trigger-platform-cicd:
@@ -35,15 +45,12 @@ jobs:
               "environment": "dev",
               "infra_name": "airflow",
               "workspace": "${{inputs.workspace}}",
-              "parameters_json":
-                "{\"vpc_id\":\"vpc-xxxxxxxx\",
+              "{\"vpc_id\":\"${{ secrets.AWS_VPC_ID }}\",
                 \"private_subnet_ids\":[
-                  \"subnet-xxxxxxxx\",
-                  \"subnet-yyyyyyyy\"
+                  \"${{ secrets.AWS_PRIVATE_SUBNET_1 }}\",
+                  \"${{ secrets.AWS_PRIVATE_SUBNET_2 }}\"
                 ],
-                \"airflow_ami_id\":\"ami-xxxxxxxx\",
-                \"airflow_image_tag\":\"${{inputs.airflow_image_tag}}\",
-                \"airflow_ecr_repository_url\":
-                  \"123456789012.dkr.ecr.us-east-2.amazonaws.com/airflow\"
+                \"airflow_ami_id\":\"${{inputs.airflow_ami_id}}\",
+                \"airflow_image_tag\":\"${{inputs.airflow_image_tag}}\"
             }
           }'

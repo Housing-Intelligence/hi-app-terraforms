@@ -47,10 +47,6 @@ variable "airflow_image_tag" {
   type = string
 }
 
-variable "airflow_ecr_repository_url" {
-  type = string
-}
-
 variable "db_name" {
   type    = string
   default = "airflow"

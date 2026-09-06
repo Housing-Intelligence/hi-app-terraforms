@@ -33,8 +33,7 @@ resource "aws_instance" "airflow" {
     set -euo pipefail
 
     export AIRFLOW_SECRET_ID="${aws_secretsmanager_secret.airflow.id}"
-    export AIRFLOW_IMAGE="${var.airflow_ecr_repository_url}:${var.airflow_image_tag}"
-    export AWS_REGION="${var.aws_region}"
+    export AIRFLOW_IMAGE_TAG="${var.airflow_image_tag}"
 
     /opt/airflow/scripts/ec2-bootstrap.sh
   EOF
