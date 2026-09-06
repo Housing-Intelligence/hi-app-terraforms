@@ -11,6 +11,12 @@ on:
           - airflow
             backend
 
+      image_tags:
+        description: "Docker image tags, comma-separated, e.g. latest,3.3.1,abc123"
+        required: true
+        type: string
+        default: "${{ github.sha }}"
+
 jobs:
   trigger-airflow-docker-build:
     runs-on: ubuntu-latest
@@ -35,7 +41,8 @@ jobs:
                 "target_repository": "Housing-Intelligence/hi-app-terraforms",
                 "docker_directory": "${{ inputs.target_app }}/docker",
                 "aws_region": "us-east-2",
-                "image_name": "${{ inputs.target_app }}"
+                "image_name": "${{ inputs.target_app }}",
+                "image_tags": "${{ inputs.image_tags }}"
               }
             }'
     
