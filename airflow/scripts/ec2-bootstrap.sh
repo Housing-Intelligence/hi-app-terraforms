@@ -5,9 +5,7 @@ set -euo pipefail
 AIRFLOW_HOME="/opt/airflow"
 export AIRFLOW_HOME
 
-ECR_REPOSITORY="${ECR_REPOSITORY:?ECR_REPOSITORY is required}"
 AIRFLOW_IMAGE_TAG="${AIRFLOW_IMAGE_TAG:?AIRFLOW_IMAGE_TAG is required}"
-
 AIRFLOW_SECRET_ID="${AIRFLOW_SECRET_ID:?AIRFLOW_SECRET_ID is required}"
 export AIRFLOW_SECRET_ID
 
@@ -43,10 +41,10 @@ get_instance_metadata() {
 }
 
 # Build ECR Image
-
 build_ecr_image() {
 
     ECR_REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+    ECR_REPOSITORY="airflow"
 
     AIRFLOW_IMAGE="${ECR_REGISTRY}/${ECR_REPOSITORY}:${AIRFLOW_IMAGE_TAG}"
 

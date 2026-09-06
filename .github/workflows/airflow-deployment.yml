@@ -1,0 +1,56 @@
+name: Airflow Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      workspace:
+        description: "Terraform workspace, e.g. airflow-dev-01"
+        required: true
+        type: string
+      airflow_image_tag:
+        description: "Airflow Docker image tag, e.g. latest or 3.3.1"
+        required: true
+        type: string
+        default: "latest"
+      airflow_ami_id:
+        description: "Airflow AMI ID, e.g. ami-xxxxxxxx"
+        required: true
+        type: string
+        default: "airflow-master"
+
+jobs:
+  trigger-platform-cicd:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Trigger platform CI/CD
+        env:
+          GH_TOKEN: ${{ secrets.CICD_TRIGGER_TOKEN }}
+        run: |
+          curl -L \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "X-GitHub-Api-Version: 2026-03-10" \
+            https://api.github.com/repos/Housing-Intelligence/hi-platform-cicd/actions/workflows/terraform-apply.yml/dispatches \
+            -d '{
+            "ref": "main",
+            "inputs": {
+              "target_repository": "Housing-Intelligence/hi-app-terraforms",
+              "terraform_directory": "airflow/terraform",
+              "aws_region": "us-east-2",
+              "environment": "dev",
+              "infra_name": "airflow",
+              "workspace": "${{inputs.workspace}}",
+              "{\"vpc_id\":\"${{ secrets.AWS_VPC_ID }}\",
+                \"private_subnet_ids\":[
+                  \"${{ secrets.AWS_PRIVATE_SUBNET_1 }}\",
+                  \"${{ secrets.AWS_PRIVATE_SUBNET_2 }}\"
+                ],
+                \"airflow_ami_id\":\"${{inputs.airflow_ami_id}}\",
+                \"airflow_image_tag\":\"${{inputs.airflow_image_tag}}\"
+            }
+          }'
