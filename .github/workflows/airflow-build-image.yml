@@ -29,26 +29,34 @@ jobs:
           GH_TOKEN: ${{ secrets.CICD_TRIGGER_TOKEN }}
         run: |
           if [[ -z "${{ inputs.image_tags }}" ]]; then
-            echo "No image tags provided, using default sha"
-            IMAGE_TAGS=“${{ github.sha }}”
+            echo "No image tags provided, using default SHA"
+            IMAGE_TAGS="${{ github.sha }}"
           else
             IMAGE_TAGS="${{ inputs.image_tags }}"
           fi
+
+          echo "Image tags: ${IMAGE_TAGS}"
+
           curl -L \
             -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${GH_TOKEN}" \
             -H "X-GitHub-Api-Version: 2026-03-10" \
             https://api.github.com/repos/Housing-Intelligence/hi-platform-cicd/actions/workflows/docker-build-push-ecr.yml/dispatches \
-            -d '{
-              "ref": "main",
-              "inputs": {
-                "target_repository": "Housing-Intelligence/hi-app-terraforms",
-                "docker_directory": "${{ inputs.target_app }}/docker",
-                "aws_region": "us-east-2",
-                "image_name": "${{ inputs.target_app }}",
-                "image_tags": "${{ IMAGE_TAGS }}"
-              }
-            }'
-    
-        
+            -d @- <<EOF
+          {
+            "ref": "main",
+            "inputs": {
+              "target_repository":
+                "Housing-Intelligence/hi-app-terraforms",
+              "docker_directory":
+                "${{ inputs.target_app }}/docker",
+              "aws_region":
+                "us-east-2",
+              "image_name":
+                "${{ inputs.target_app }}",
+              "image_tags":
+                "${IMAGE_TAGS}"
+            }
+          }
+          EOF
