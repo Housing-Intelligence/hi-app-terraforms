@@ -4,6 +4,8 @@ COPY docker/requirements.txt /requirements.txt
 
 RUN pip install --no-cache-dir -r /requirements.txt
 
+USER root
+
 COPY scripts/airflow-init.sh /opt/airflow/scripts/
 
 COPY scripts/bootstrap-roles.sh /opt/airflow/scripts/
