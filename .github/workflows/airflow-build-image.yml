@@ -49,8 +49,8 @@ jobs:
             "inputs": {
               "target_repository":
                 "Housing-Intelligence/hi-app-terraforms",
-              "docker_directory":
-                "${{ inputs.target_app }}/docker",
+              "app_directory":
+                "${{ inputs.target_app }}",
               "aws_region":
                 "us-east-2",
               "image_name":
