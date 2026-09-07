@@ -9,7 +9,7 @@ on:
         type: choice
         options:
           - airflow
-            backend
+          - backend
 
       image_tags:
         description: "Docker image tags, comma-separated, e.g. latest,3.3.1,abc123"
