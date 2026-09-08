@@ -53,10 +53,14 @@ jobs:
               "environment": "dev",
               "infra_name": "airflow",
               "workspace": "${{inputs.workspace}}",
-              "{\"vpc_id\":\"${{ secrets.AWS_VPC_ID }}\",
+              "{\"vpc_id\":\"${{ variables.AWS_VPC_ID }}\",
                 \"private_subnet_ids\":[
-                  \"${{ secrets.AWS_PRIVATE_SUBNET_1 }}\",
-                  \"${{ secrets.AWS_PRIVATE_SUBNET_2 }}\"
+                  \"${{ variables.AWS_PRIVATE_SUBNET_1 }}\",
+                  \"${{ variables.AWS_PRIVATE_SUBNET_2 }}\"
+                ],
+                \"public_subnet_ids\":[
+                  \"${{ variables.AWS_PUBLIC_SUBNET_1 }}\",
+                  \"${{ variables.AWS_PUBLIC_SUBNET_2 }}\"
                 ],
                 \"airflow_ami_id\":\"${{inputs.airflow_ami_id}}\"
             }
