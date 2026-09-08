@@ -14,12 +14,23 @@ resource "aws_security_group" "airflow_ec2_sg" {
     Environment = var.workspace
   }
 }
+
+resource "aws_vpc_security_group_ingress_rule" "airflow_ui" {
+  security_group_id = aws_security_group.airflow_ec2_sg.id
+
+  cidr_ipv4   = "123.90.9.0/24"
+  from_port   = 8080
+  to_port     = 8080
+  ip_protocol = "tcp"
+}
   
 resource "aws_instance" "airflow" {
   ami           = var.airflow_ami_id
   instance_type = var.ec2_parameters["instance_type"]
 
   subnet_id = var.public_subnet_ids[0]
+
+  associate_public_ip_address = true
 
   vpc_security_group_ids = [
     aws_security_group.airflow_ec2_sg.id
