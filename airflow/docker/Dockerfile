@@ -17,3 +17,5 @@ COPY scripts/wait-for-db.sh /opt/airflow/scripts/
 COPY scripts/watchdog-entrypoint.sh /opt/airflow/scripts/
 
 RUN chmod +x /opt/airflow/scripts/*.sh
+
+USER airflow
