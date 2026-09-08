@@ -39,6 +39,10 @@ variable "private_subnet_ids" {
   type = list(string)
 }
 
+variable "public_subnet_ids" {
+  type = list(string)
+}
+
 variable "airflow_ami_id" {
   type = string
 }
