@@ -35,6 +35,7 @@ jobs:
                 "target_repository": "Housing-Intelligence/hi-app-terraforms",
                 "packer_directory": "${{ inputs.target_app }}/packer",
                 "aws_region": "us-east-2",
+                "subnet_id": "${{ secrets.AWS_PUBLIC_SUBNET_1 }}",
                 "ami_name": "${{ inputs.target_app }}-master"
               }
             }'
