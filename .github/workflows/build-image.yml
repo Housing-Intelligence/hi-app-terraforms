@@ -11,6 +11,14 @@ on:
           - airflow
           - backend
 
+      environment:
+        description: "Deployment environment"
+        required: true
+        type: choice
+        options:
+          - dev
+          - prod
+
       image_tags:
         description: "Docker image tags, comma-separated, e.g. latest,3.3.1,abc123"
         required: false
@@ -24,7 +32,7 @@ jobs:
       contents: read
 
     steps:
-      - name: Trigger docker build and promote to ecr
+      - name: Trigger docker build and promote to ECR
         env:
           GH_TOKEN: ${{ secrets.CICD_TRIGGER_TOKEN }}
         run: |
@@ -51,8 +59,8 @@ jobs:
                 "Housing-Intelligence/hi-app-terraforms",
               "app_directory":
                 "${{ inputs.target_app }}",
-              "aws_region":
-                "us-east-2",
+              "environment":
+                "${{ inputs.environment }}",
               "image_name":
                 "${{ inputs.target_app }}",
               "image_tags":

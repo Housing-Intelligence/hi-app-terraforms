@@ -1,15 +1,8 @@
-name: Build VM AMI
+name: Deploy Backend
 
 on:
   workflow_dispatch:
     inputs:
-      target_app:
-        description: "Target application, eg: airflow, backend"
-        required: true
-        type: choice
-        options:
-          - airflow
-          - backend
       environment:
         description: "Deployment environment"
         required: true
@@ -17,16 +10,17 @@ on:
         options:
           - dev
           - prod
+      template:
+        description: "Template name, e.g. dev-mintest"
+        required: true
+        type: string
 
 jobs:
-  trigger-ami-build:
+  trigger-airflow-ami-build:
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: read
-
     steps:
-      - name: Trigger AMI build
+      - name: Trigger Backend Terraform deployment
         env:
           GH_TOKEN: ${{ secrets.CICD_TRIGGER_TOKEN }}
         run: |
@@ -35,13 +29,11 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${GH_TOKEN}" \
             -H "X-GitHub-Api-Version: 2026-03-10" \
-            https://api.github.com/repos/Housing-Intelligence/hi-platform-cicd/actions/workflows/build-ami.yml/dispatches \
+            https://api.github.com/repos/Housing-Intelligence/hi-platform-cicd/actions/workflows/terraform-apply.yml/dispatches \
             -d '{
               "ref": "main",
               "inputs": {
                 "target_repository": "Housing-Intelligence/hi-app-terraforms",
-                "packer_directory": "${{ inputs.target_app }}/packer",
-                "environment": "${{ inputs.environment }}",
-                "ami_name": "${{ inputs.target_app }}-master"
+                "terraform_directory": "airflow/terraform",
               }
             }'
