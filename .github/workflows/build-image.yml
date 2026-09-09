@@ -1,4 +1,4 @@
-name: Build Airflow Image
+name: Build Docker Image
 
 on:
   workflow_dispatch:
@@ -17,7 +17,7 @@ on:
         type: string
 
 jobs:
-  trigger-airflow-docker-build:
+  trigger-docker-build:
     runs-on: ubuntu-latest
 
     permissions:
