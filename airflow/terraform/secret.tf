@@ -17,8 +17,15 @@ resource "aws_secretsmanager_secret_version" "airflow" {
     # }
 
     airflow = {
-      fernet_key = random_id.airflow_fernet.b64_url
-      jwt_secret = random_password.airflow_jwt.result
+      fernet_key  = random_id.airflow_fernet.b64_url
+      jwt_secret  = random_password.airflow_jwt.result
+      api_secret_key = random_password.airflow_api_secret.result
+
+      admin_username  = "admin"
+      admin_firstname = "Airflow"
+      admin_lastname  = "Admin"
+      admin_email     = "admin@example.com"
+      admin_password  = var.airflow_admin_pw
     }
   })
 }

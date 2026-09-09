@@ -52,6 +52,13 @@ extract_secrets() {
     # REDIS_PORT=$(echo "${SECRET_JSON}" | jq -r '.redis.port')
     # REDIS_PASSWORD=$(echo "${SECRET_JSON}" | jq -r '.redis.password')
 
+    AIRFLOW_ADMIN_USERNAME=$(echo "${SECRET_JSON}" | jq -r '.airflow.admin_username')
+    AIRFLOW_ADMIN_FIRSTNAME=$(echo "${SECRET_JSON}" | jq -r '.airflow.admin_firstname')
+    AIRFLOW_ADMIN_LASTNAME=$(echo "${SECRET_JSON}" | jq -r '.airflow.admin_lastname')
+    AIRFLOW_ADMIN_EMAIL=$(echo "${SECRET_JSON}" | jq -r '.airflow.admin_email')
+    AIRFLOW_ADMIN_PASSWORD=$(echo "${SECRET_JSON}" | jq -r '.airflow.admin_password')
+    AIRFLOW_API_SECRET_KEY=$(echo "${SECRET_JSON}" | jq -r '.airflow.api_secret_key')
+
     AIRFLOW_FERNET_KEY=$(echo "${SECRET_JSON}" | jq -r '.airflow.fernet_key')
     AIRFLOW_JWT_SECRET=$(echo "${SECRET_JSON}" | jq -r '.airflow.jwt_secret')
 
@@ -79,6 +86,12 @@ extract_secrets() {
     if [[ -z "${RDS_PASSWORD}" || "${RDS_PASSWORD}" == "null" ]]; then
         log "RDS password is missing"
         exit 1
+    fi
+
+    if [[ -z "${AIRFLOW_API_SECRET_KEY}" ||
+      "${AIRFLOW_API_SECRET_KEY}" == "null" ]]; then
+    log "API secret key is missing"
+    exit 1
     fi
 
     # if [[ -z "${REDIS_HOST}" || "${REDIS_HOST}" == "null" ]]; then
@@ -127,13 +140,35 @@ AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=${AIRFLOW_DB_CONNECTION}
 
 AIRFLOW__CORE__FERNET_KEY=${AIRFLOW_FERNET_KEY}
 
+AIRFLOW__CORE__AUTH_MANAGER=airflow.providers.fab.auth_manager.FabAuthManager
+
 AIRFLOW__API_AUTH__JWT_SECRET=${AIRFLOW_JWT_SECRET}
 
 AIRFLOW__CORE__LOAD_EXAMPLES=false
 
-AIRFLOW__WEBSERVER__EXPOSE_CONFIG=false
+AIRFLOW__API__EXPOSE_CONFIG=false
 
 AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=true
+
+AIRFLOW_VARIABLES_FILE=/opt/airflow/config/variables.json
+
+AIRFLOW_ADMIN_USERNAME=${AIRFLOW_ADMIN_USERNAME}
+
+AIRFLOW_ADMIN_FIRSTNAME=${AIRFLOW_ADMIN_FIRSTNAME}
+
+AIRFLOW_ADMIN_LASTNAME=${AIRFLOW_ADMIN_LASTNAME}
+
+AIRFLOW_ADMIN_EMAIL=${AIRFLOW_ADMIN_EMAIL}
+
+AIRFLOW_ADMIN_PASSWORD=${AIRFLOW_ADMIN_PASSWORD}
+
+AIRFLOW__API__SECRET_KEY=${AIRFLOW_API_SECRET_KEY}
+
+AIRFLOW_POOL_NAME=default_pool
+
+AIRFLOW_POOL_SLOTS=10
+
+AIRFLOW_POOL_DESCRIPTION=Default Airflow pool
 
 DB_HOST=${RDS_HOST}
 
