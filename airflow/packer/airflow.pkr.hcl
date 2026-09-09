@@ -17,6 +17,10 @@ variable "ami_name" {
   default = "airflow-master"
 }
 
+variable "subnet_id" {
+  type = string
+}
+
 source "amazon-ebs" "airflow" {
 
   region = var.aws_region
@@ -35,6 +39,8 @@ source "amazon-ebs" "airflow" {
     owners      = ["amazon"]
     most_recent = true
   }
+
+  subnet_id = var.subnet_id
 
   ssh_username = "ec2-user"
 
