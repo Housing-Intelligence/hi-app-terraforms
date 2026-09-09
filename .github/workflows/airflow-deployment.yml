@@ -12,6 +12,10 @@ on:
         required: true
         type: string
         default: "airflow-master"
+      airflow_admin_password:
+        description: "Airflow admin password"
+        required: true
+        type: string
       action:
         description: "Terraform action to perform, e.g. apply or destroy"
         required: true
@@ -62,6 +66,7 @@ jobs:
                   \"${{ secrets.AWS_PUBLIC_SUBNET_1 }}\",
                   \"${{ secrets.AWS_PUBLIC_SUBNET_2 }}\"
                 ],
-                \"airflow_ami_id\":\"${{inputs.airflow_ami_id}}\"
+                \"airflow_ami_id\":\"${{inputs.airflow_ami_id}}\",
+                \"airflow_admin_pw\":\"${{inputs.airflow_admin_password}}\"
             }
           }'

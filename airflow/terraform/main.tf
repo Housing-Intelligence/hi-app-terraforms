@@ -69,8 +69,13 @@ variable "pg_parameters" {
   type = map(string)
 }
 
-variable "redis_parameters" {
-  type = map(string)
+# variable "redis_parameters" {
+#   type = map(string)
+# }
+
+variable "airflow_admin_pw" {
+  type      = string
+  sensitive = true
 }
 
 resource "aws_secretsmanager_secret" "airflow" {
@@ -90,6 +95,11 @@ resource "random_id" "airflow_fernet" {
 }
 
 resource "random_password" "airflow_jwt" {
+  length  = 64
+  special = false
+}
+
+resource "random_password" "airflow_api_secret" {
   length  = 64
   special = false
 }

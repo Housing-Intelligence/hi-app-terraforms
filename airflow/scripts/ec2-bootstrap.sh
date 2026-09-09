@@ -74,6 +74,30 @@ render_environment() {
     log "Airflow environment rendered"
 }
 
+login_ecr() {
+    log "Logging in to ECR..."
+
+    aws ecr get-login-password \
+        --region "${AWS_REGION}" |
+        docker login \
+        --username AWS \
+        --password-stdin \
+        "${ECR_REGISTRY}"
+
+    log "ECR login completed"
+}
+
+start_airflow() {
+    log "Starting Airflow..."
+
+    cd "${AIRFLOW_HOME}"
+
+    docker compose pull
+    docker compose up -d
+
+    log "Airflow started"
+}
+
 main() {
 
     log "Starting Airflow EC2 bootstrap..."
@@ -85,6 +109,10 @@ main() {
     build_ecr_image
 
     render_environment
+
+    login_ecr
+
+    start_airflow
 
     log "Airflow EC2 bootstrap completed successfully."
 }
