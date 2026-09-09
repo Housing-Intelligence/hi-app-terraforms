@@ -57,7 +57,6 @@ resource "aws_db_instance" "airflow_db" {
   skip_final_snapshot     = true
   publicly_accessible     = false
   multi_az                = false
-  backup_retention_period = 7
   deletion_protection     = false
   storage_encrypted       = true
 
