@@ -9,7 +9,7 @@ on:
         type: choice
         options:
           - airflow
-            backend
+          - backend
 
 jobs:
   trigger-airflow-ami-build:
