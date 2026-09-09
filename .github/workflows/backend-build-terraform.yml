@@ -10,10 +10,19 @@ on:
         options:
           - dev
           - prod
+          
       template:
         description: "Template name, e.g. dev-mintest"
         required: true
         type: string
+        
+      action:
+        description: "Terraform action to perform, e.g. apply or destroy"
+        required: true
+        type: choice
+        options:
+          - apply
+          - destroy
 
 jobs:
   trigger-airflow-ami-build:

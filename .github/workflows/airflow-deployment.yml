@@ -10,6 +10,11 @@ on:
         options:
           - dev
           - prod
+      
+      template:
+        description: "Template name, e.g. dev-mintest"
+        required: true
+        type: string
 
       workspace:
         description: "Terraform workspace, e.g. airflow-dev-01"
@@ -65,6 +70,7 @@ jobs:
               "target_repository": "Housing-Intelligence/hi-app-terraforms",
               "terraform_directory": "airflow/terraform",
               "infra_name": "airflow",
+              "template_name": "${{ inputs.template_name }}",
               "environment": "${{ inputs.environment }}",
               "parameters_json": "{\"workspace\":\"${{ inputs.workspace }}\",\"airflow_ami_id\":\"${{ inputs.airflow_ami_id }}\",\"airflow_admin_pw\":\"${{ inputs.airflow_admin_password }}\"}"
             }
