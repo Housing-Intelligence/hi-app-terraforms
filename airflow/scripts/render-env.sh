@@ -9,6 +9,7 @@ AIRFLOW_SECRET_ID="${AIRFLOW_SECRET_ID:?AIRFLOW_SECRET_ID is required}"
 AIRFLOW_IMAGE="${AIRFLOW_IMAGE:?AIRFLOW_IMAGE is required}"
 AWS_REGION="${AWS_REGION:?AWS_REGION is required}"
 
+
 # Logging
 
 log() {
@@ -36,31 +37,76 @@ get_secret() {
     log "Airflow secret loaded successfully"
 }
 
+
 # Extract Secrets
 
 extract_secrets() {
 
-    AIRFLOW_DB_CONNECTION=$(echo "${SECRET_JSON}" | jq -r '.db_connection')
-    AIRFLOW_FERNET_KEY=$(echo "${SECRET_JSON}" | jq -r '.fernet_key')
-    AIRFLOW_SECRET_KEY=$(echo "${SECRET_JSON}" | jq -r '.secret_key')
+    RDS_HOST=$(echo "${SECRET_JSON}" | jq -r '.rds.host')
+    RDS_PORT=$(echo "${SECRET_JSON}" | jq -r '.rds.port')
+    RDS_DATABASE=$(echo "${SECRET_JSON}" | jq -r '.rds.database')
+    RDS_USERNAME=$(echo "${SECRET_JSON}" | jq -r '.rds.username')
+    RDS_PASSWORD=$(echo "${SECRET_JSON}" | jq -r '.rds.password')
 
-    if [[ -z "${AIRFLOW_DB_CONNECTION}" || "${AIRFLOW_DB_CONNECTION}" == "null" ]]; then
-        log "db_connection is missing"
+    # REDIS_HOST=$(echo "${SECRET_JSON}" | jq -r '.redis.host')
+    # REDIS_PORT=$(echo "${SECRET_JSON}" | jq -r '.redis.port')
+    # REDIS_PASSWORD=$(echo "${SECRET_JSON}" | jq -r '.redis.password')
+
+    AIRFLOW_FERNET_KEY=$(echo "${SECRET_JSON}" | jq -r '.airflow.fernet_key')
+    AIRFLOW_JWT_SECRET=$(echo "${SECRET_JSON}" | jq -r '.airflow.jwt_secret')
+
+
+    if [[ -z "${RDS_HOST}" || "${RDS_HOST}" == "null" ]]; then
+        log "RDS host is missing"
         exit 1
     fi
+
+    if [[ -z "${RDS_PORT}" || "${RDS_PORT}" == "null" ]]; then
+        log "RDS port is missing"
+        exit 1
+    fi
+
+    if [[ -z "${RDS_DATABASE}" || "${RDS_DATABASE}" == "null" ]]; then
+        log "RDS database is missing"
+        exit 1
+    fi
+
+    if [[ -z "${RDS_USERNAME}" || "${RDS_USERNAME}" == "null" ]]; then
+        log "RDS username is missing"
+        exit 1
+    fi
+
+    if [[ -z "${RDS_PASSWORD}" || "${RDS_PASSWORD}" == "null" ]]; then
+        log "RDS password is missing"
+        exit 1
+    fi
+
+    # if [[ -z "${REDIS_HOST}" || "${REDIS_HOST}" == "null" ]]; then
+    #     log "Redis host is missing"
+    #     exit 1
+    # fi
+
+    # if [[ -z "${REDIS_PASSWORD}" || "${REDIS_PASSWORD}" == "null" ]]; then
+    #     log "Redis password is missing"
+    #     exit 1
+    # fi
 
     if [[ -z "${AIRFLOW_FERNET_KEY}" || "${AIRFLOW_FERNET_KEY}" == "null" ]]; then
-        log "fernet_key is missing"
+        log "Fernet key is missing"
         exit 1
     fi
 
-    if [[ -z "${AIRFLOW_SECRET_KEY}" || "${AIRFLOW_SECRET_KEY}" == "null" ]]; then
-        log "secret_key is missing"
+    if [[ -z "${AIRFLOW_JWT_SECRET}" || "${AIRFLOW_JWT_SECRET}" == "null" ]]; then
+        log "JWT secret is missing"
         exit 1
     fi
+
+
+    AIRFLOW_DB_CONNECTION="postgresql+psycopg2://${RDS_USERNAME}:${RDS_PASSWORD}@${RDS_HOST}:${RDS_PORT}/${RDS_DATABASE}"
 
     log "Required secrets validated"
 }
+
 
 # Render .env
 
@@ -81,19 +127,25 @@ AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=${AIRFLOW_DB_CONNECTION}
 
 AIRFLOW__CORE__FERNET_KEY=${AIRFLOW_FERNET_KEY}
 
-AIRFLOW__API_AUTH__JWT_SECRET=${AIRFLOW_SECRET_KEY}
+AIRFLOW__API_AUTH__JWT_SECRET=${AIRFLOW_JWT_SECRET}
 
 AIRFLOW__CORE__LOAD_EXAMPLES=false
 
 AIRFLOW__WEBSERVER__EXPOSE_CONFIG=false
 
 AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=true
+
+DB_HOST=${RDS_HOST}
+
+DB_PORT=${RDS_PORT}
+
 EOF
 
     chmod 600 "${ENV_FILE}"
 
     log "Environment file created: ${ENV_FILE}"
 }
+
 
 # Main
 

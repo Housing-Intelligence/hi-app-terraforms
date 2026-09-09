@@ -69,9 +69,9 @@ variable "pg_parameters" {
   type = map(string)
 }
 
-variable "redis_parameters" {
-  type = map(string)
-}
+# variable "redis_parameters" {
+#   type = map(string)
+# }
 
 resource "aws_secretsmanager_secret" "airflow" {
   name = "airflow-${var.workspace}-secret"

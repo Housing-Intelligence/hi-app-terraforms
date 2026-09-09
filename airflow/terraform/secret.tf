@@ -10,11 +10,11 @@ resource "aws_secretsmanager_secret_version" "airflow" {
       password = random_password.db.result
     }
 
-    redis = {
-      host     = aws_elasticache_replication_group.airflow_redis.primary_endpoint_address
-      port     = aws_elasticache_replication_group.airflow_redis.port
-      password = random_password.redis.result
-    }
+    # redis = {
+    #   host     = aws_elasticache_replication_group.airflow_redis.primary_endpoint_address
+    #   port     = aws_elasticache_replication_group.airflow_redis.port
+    #   password = random_password.redis.result
+    # }
 
     airflow = {
       fernet_key = random_id.airflow_fernet.b64_url

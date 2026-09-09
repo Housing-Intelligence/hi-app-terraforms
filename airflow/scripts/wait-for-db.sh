@@ -1,1 +1,0 @@
-# Wait for DB connection to be available
