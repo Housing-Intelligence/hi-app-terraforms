@@ -10,19 +10,24 @@ on:
         options:
           - dev
           - prod
-          
+
       template:
         description: "Template name, e.g. dev-mintest"
         required: true
         type: string
         
-      action:
+      operation:
         description: "Terraform action to perform, e.g. apply or destroy"
         required: true
         type: choice
         options:
           - apply
           - destroy
+      
+      workspace:
+        description: "Terraform workspace, e.g. backend-dev-01"
+        required: true
+        type: string
 
 jobs:
   trigger-airflow-ami-build:
@@ -38,11 +43,13 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${GH_TOKEN}" \
             -H "X-GitHub-Api-Version: 2026-03-10" \
-            https://api.github.com/repos/Housing-Intelligence/hi-platform-cicd/actions/workflows/terraform-apply.yml/dispatches \
+            https://api.github.com/repos/Housing-Intelligence/hi-platform-cicd/actions/workflows/terraform.yml/dispatches \
             -d '{
               "ref": "main",
               "inputs": {
                 "target_repository": "Housing-Intelligence/hi-app-terraforms",
                 "terraform_directory": "airflow/terraform",
+                "operation": "${{ inputs.operation }}",
+                "parameters_json": "{\"workspace\":\"airflow-${{ inputs.workspace }}\"}"
               }
             }'
