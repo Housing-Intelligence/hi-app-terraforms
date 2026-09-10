@@ -57,8 +57,6 @@ resource "aws_instance" "airflow" {
 
     # Reload systemd and start Airflow
     systemctl daemon-reload
-    systemctl enable startup.service
-    systemctl start startup.service
   EOF
 
   tags = {

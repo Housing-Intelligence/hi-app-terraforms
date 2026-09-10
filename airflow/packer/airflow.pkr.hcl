@@ -22,15 +22,26 @@ variable "subnet_id" {
 }
 
 source "amazon-ebs" "airflow" {
+
   region = var.aws_region
 
   ami_name = "${var.ami_name}-${formatdate("YYYYMMDD-hhmmss", timestamp())}"
 
   instance_type = "t3.small"
 
-  source_ami_ssm_parameter = "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.12-x86_64"
+  source_ami_filter {
+    filters = {
+      name                = "al2023-ami-*-x86_64"
+      root-device-type    = "ebs"
+      virtualization-type = "hvm"
+    }
 
-  subnet_id    = var.subnet_id
+    owners      = ["amazon"]
+    most_recent = true
+  }
+
+  subnet_id = var.subnet_id
+
   ssh_username = "ec2-user"
 
   tags = {
@@ -50,10 +61,24 @@ build {
     inline = [
       "sudo dnf update -y",
 
+      # Docker and other utilities
       "sudo dnf install -y docker awscli jq unzip",
 
-      "sudo systemctl enable docker"
+      # Start Docker and enable it on boot
+      "sudo systemctl enable --now docker",
 
+      # Install Docker Compose CLI plugin
+      "sudo mkdir -p /usr/local/lib/docker/cli-plugins",
+
+      "sudo curl -SL https://github.com/docker/compose/releases/download/v2.39.2/docker-compose-linux-x86_64 -o /usr/local/lib/docker/cli-plugins/docker-compose",
+
+      "sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose",
+
+      # Verify installations
+      "docker --version",
+      "docker compose version",
+      "aws --version",
+      "jq --version"
     ]
   }
 
@@ -118,7 +143,12 @@ build {
       "sudo chmod 755 /opt/airflow/scripts/wait-for-password.sh",
 
       # Ownership
-      "sudo chown -R root:root /opt/airflow"
+      "sudo chown -R root:root /opt/airflow",
+
+      # Reload systemd
+      "sudo systemctl daemon-reload",
+      "sudo systemctl enable wait-for-password.service",
+      "sudo systemctl enable startup.service"
     ]
   }
 }
