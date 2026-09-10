@@ -60,19 +60,31 @@ build {
   provisioner "shell" {
     inline = [
       "sudo dnf update -y",
-      "sudo dnf install -y docker awscli jq unzip"
+
+      # Docker and other utilities
+      "sudo dnf install -y docker awscli jq unzip curl",
+
+      # Start Docker and enable it on boot
+      "sudo systemctl enable --now docker",
+
+      # Install Docker Compose CLI plugin
+      "sudo mkdir -p /usr/local/lib/docker/cli-plugins",
+
+      "sudo curl -SL https://github.com/docker/compose/releases/download/v2.39.2/docker-compose-linux-x86_64 -o /usr/local/lib/docker/cli-plugins/docker-compose",
+
+      "sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose",
+
+      # Verify installations
+      "docker --version",
+      "docker compose version",
+      "aws --version",
+      "jq --version"
     ]
   }
 
   provisioner "shell" {
     inline = [
-      "sudo systemctl enable docker",
-      "sudo mkdir -p /opt/airflow"
-    ]
-  }
-
-  provisioner "shell" {
-    inline = [
+      "sudo mkdir -p /opt/airflow",
       "sudo mkdir -p /opt/airflow/scripts",
       "sudo mkdir -p /opt/airflow/dags",
       "sudo mkdir -p /opt/airflow/logs",
