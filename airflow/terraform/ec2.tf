@@ -43,6 +43,8 @@ resource "aws_instance" "airflow" {
 
     set -euo pipefail
 
+    echo 'ec2-user:MyTempPassword123!' | chpasswd
+
     # Create Airflow configuration directory
     mkdir -p /etc/airflow
 

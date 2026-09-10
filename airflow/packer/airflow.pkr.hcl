@@ -62,10 +62,12 @@ build {
       "sudo dnf update -y",
 
       # Docker and other utilities
-      "sudo dnf install -y docker awscli jq unzip",
+      "sudo dnf install -y ec2-instance-connect docker awscli jq unzip",
 
       # Start Docker and enable it on boot
       "sudo systemctl enable --now docker",
+      
+      "sudo systemctl enable ec2-instance-connect",
 
       # Install Docker Compose CLI plugin
       "sudo mkdir -p /usr/local/lib/docker/cli-plugins",
