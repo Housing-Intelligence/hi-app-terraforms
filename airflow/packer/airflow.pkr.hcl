@@ -22,26 +22,15 @@ variable "subnet_id" {
 }
 
 source "amazon-ebs" "airflow" {
-
   region = var.aws_region
 
   ami_name = "${var.ami_name}-${formatdate("YYYYMMDD-hhmmss", timestamp())}"
 
   instance_type = "t3.small"
 
-  source_ami_filter {
-    filters = {
-      name                = "al2023-ami-*-x86_64"
-      root-device-type    = "ebs"
-      virtualization-type = "hvm"
-    }
+  source_ami_ssm_parameter = "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.12-x86_64"
 
-    owners      = ["amazon"]
-    most_recent = true
-  }
-
-  subnet_id = var.subnet_id
-
+  subnet_id    = var.subnet_id
   ssh_username = "ec2-user"
 
   tags = {
