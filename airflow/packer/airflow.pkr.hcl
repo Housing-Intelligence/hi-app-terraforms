@@ -62,7 +62,7 @@ build {
       "sudo dnf update -y",
 
       # Docker and other utilities
-      "sudo dnf install -y docker awscli jq unzip curl",
+      "sudo dnf install -y docker awscli jq unzip",
 
       # Start Docker and enable it on boot
       "sudo systemctl enable --now docker",
