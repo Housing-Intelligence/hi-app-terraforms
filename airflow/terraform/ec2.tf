@@ -43,10 +43,22 @@ resource "aws_instance" "airflow" {
 
     set -euo pipefail
 
-    export AIRFLOW_SECRET_ID="${aws_secretsmanager_secret.airflow.id}"
-    export AIRFLOW_IMAGE_TAG="${var.airflow_image_tag}"
+    # Create Airflow configuration directory
+    mkdir -p /etc/airflow
 
-    /opt/airflow/scripts/ec2-bootstrap.sh
+    # Provide runtime configuration for systemd services
+    cat > /etc/airflow/airflow.conf <<'CONFIG'
+    AIRFLOW_SECRET_ID=${aws_secretsmanager_secret.airflow.id}
+    AIRFLOW_IMAGE_TAG=${var.airflow_image_tag}
+    AWS_REGION=${var.aws_region}
+    CONFIG
+
+    chmod 600 /etc/airflow/airflow.conf
+
+    # Reload systemd and start Airflow
+    systemctl daemon-reload
+    systemctl enable startup.service
+    systemctl start startup.service
   EOF
 
   tags = {

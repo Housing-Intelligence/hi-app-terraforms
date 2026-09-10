@@ -108,16 +108,45 @@ build {
     destination = "/tmp/render-env.sh"
   }
 
+  provisioner "file" {
+    source      = "${path.root}/../scripts/wait-for-password.sh"
+    destination = "/tmp/wait-for-password.sh"
+  }
+
+  provisioner "file" {
+    source      = "${path.root}/../scripts/wait-for-password.service"
+    destination = "/tmp/wait-for-password.service"
+  }
+
+  provisioner "file" {
+    source      = "${path.root}/../scripts/startup.service"
+    destination = "/tmp/startup.service"
+  }
+  
   provisioner "shell" {
     inline = [
+      # Airflow scripts
       "sudo mv /tmp/ec2-bootstrap.sh /opt/airflow/scripts/ec2-bootstrap.sh",
       "sudo mv /tmp/render-env.sh /opt/airflow/scripts/render-env.sh",
+      "sudo mv /tmp/wait-for-password.sh /opt/airflow/scripts/wait-for-password.sh",
+
+      # Docker Compose
       "sudo mv /tmp/docker-compose.yml /opt/airflow/docker-compose.yml",
 
+      # Systemd services
+      "sudo mv /tmp/wait-for-password.service /etc/systemd/system/wait-for-password.service",
+      "sudo mv /tmp/startup.service /etc/systemd/system/startup.service",
+
+      # Permissions
       "sudo chmod 755 /opt/airflow/scripts/ec2-bootstrap.sh",
       "sudo chmod 755 /opt/airflow/scripts/render-env.sh",
+      "sudo chmod 755 /opt/airflow/scripts/wait-for-password.sh",
 
-      "sudo chown -R root:root /opt/airflow"
+      # Ownership
+      "sudo chown -R root:root /opt/airflow",
+
+      # Reload systemd
+      "sudo systemctl daemon-reload"
     ]
   }
 }
