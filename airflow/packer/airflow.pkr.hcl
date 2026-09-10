@@ -61,24 +61,10 @@ build {
     inline = [
       "sudo dnf update -y",
 
-      # Docker and other utilities
       "sudo dnf install -y docker awscli jq unzip",
 
-      # Start Docker and enable it on boot
-      "sudo systemctl enable --now docker",
+      "sudo systemctl enable docker"
 
-      # Install Docker Compose CLI plugin
-      "sudo mkdir -p /usr/local/lib/docker/cli-plugins",
-
-      "sudo curl -SL https://github.com/docker/compose/releases/download/v2.39.2/docker-compose-linux-x86_64 -o /usr/local/lib/docker/cli-plugins/docker-compose",
-
-      "sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose",
-
-      # Verify installations
-      "docker --version",
-      "docker compose version",
-      "aws --version",
-      "jq --version"
     ]
   }
 
@@ -143,10 +129,7 @@ build {
       "sudo chmod 755 /opt/airflow/scripts/wait-for-password.sh",
 
       # Ownership
-      "sudo chown -R root:root /opt/airflow",
-
-      # Reload systemd
-      "sudo systemctl daemon-reload"
+      "sudo chown -R root:root /opt/airflow"
     ]
   }
 }
