@@ -1,11 +1,11 @@
 [Unit]
 Description=Start Airflow
-Requires=wait-for-password.service
+Wants=wait-for-password.service
 After=wait-for-password.service
 
 [Service]
 Type=oneshot
-EnvironmentFile=/etc/airflow/airflow.conf
+EnvironmentFile=-/etc/airflow/airflow.conf
 ExecStart=/opt/airflow/scripts/ec2-bootstrap.sh
 RemainAfterExit=yes
 
