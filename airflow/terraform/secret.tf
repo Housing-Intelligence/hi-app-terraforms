@@ -1,5 +1,6 @@
 resource "aws_secretsmanager_secret_version" "airflow" {
   secret_id = aws_secretsmanager_secret.airflow.id
+  recovery_window_in_days = 0
 
   secret_string = jsonencode({
     rds = {
