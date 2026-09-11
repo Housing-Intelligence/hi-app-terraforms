@@ -66,8 +66,6 @@ build {
 
       # Start Docker and enable it on boot
       "sudo systemctl enable --now docker",
-      
-      "sudo systemctl enable ec2-instance-connect",
 
       # Install Docker Compose CLI plugin
       "sudo mkdir -p /usr/local/lib/docker/cli-plugins",
