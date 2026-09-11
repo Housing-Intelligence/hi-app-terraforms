@@ -79,6 +79,7 @@ variable "airflow_admin_pw" {
 }
 
 resource "aws_secretsmanager_secret" "airflow" {
+  recovery_window_in_days = 0
   name = "airflow-${var.workspace}-secret"
 }
 
