@@ -58,11 +58,12 @@ resource "aws_instance" "airflow" {
     mkdir -p /etc/airflow
 
     # Provide runtime configuration for systemd services
-    cat >> /etc/airflow/airflow.conf <<'CONFIG'
-    AIRFLOW_SECRET_ID=${aws_secretsmanager_secret.airflow.id}
-    AIRFLOW_IMAGE_TAG=${var.airflow_image_tag}
-    AWS_REGION=${var.aws_region}
-    CONFIG
+    {
+        printf '\n'
+        printf 'AIRFLOW_SECRET_ID=%s\n' '${aws_secretsmanager_secret.airflow.id}'
+        printf 'AIRFLOW_IMAGE_TAG=%s\n' '${var.airflow_image_tag}'
+        printf 'AWS_REGION=%s\n' '${var.aws_region}'
+    } >> /etc/airflow/airflow.conf
 
     chmod 600 /etc/airflow/airflow.conf
 
