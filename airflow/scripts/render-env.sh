@@ -140,7 +140,7 @@ AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=${AIRFLOW_DB_CONNECTION}
 
 AIRFLOW__CORE__FERNET_KEY=${AIRFLOW_FERNET_KEY}
 
-AIRFLOW__CORE__AUTH_MANAGER=airflow.providers.fab.auth_manager.FabAuthManager
+AIRFLOW__CORE__AUTH_MANAGER=airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
 
 AIRFLOW__API_AUTH__JWT_SECRET=${AIRFLOW_JWT_SECRET}
 

@@ -11,6 +11,7 @@ services:
       - ./logs:/opt/airflow/logs
       - ./configs:/opt/airflow/config:ro
 
+    entrypoint: ["/bin/bash"]
     command:
       - /opt/airflow/scripts/airflow-init.sh
 

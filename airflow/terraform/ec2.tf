@@ -69,6 +69,7 @@ resource "aws_instance" "airflow" {
 
     # Reload systemd and start Airflow
     systemctl daemon-reload
+    systemctl start wait-for-password.service
   EOF
 
   tags = {

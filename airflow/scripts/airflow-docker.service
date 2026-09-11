@@ -2,7 +2,7 @@
 Description=Airflow Docker Compose Stack
 
 Requires=docker.service
-After=docker.service network-online.target startup.service
+After=docker.service network-online.target
 
 PartOf=docker.service
 
