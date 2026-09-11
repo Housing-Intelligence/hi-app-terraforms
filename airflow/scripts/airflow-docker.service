@@ -1,0 +1,21 @@
+[Unit]
+Description=Airflow Docker Compose Stack
+
+Requires=docker.service
+After=docker.service network-online.target startup.service
+
+PartOf=docker.service
+
+[Service]
+Type=simple
+
+WorkingDirectory=/opt/airflow
+
+ExecStart=/usr/bin/docker compose up
+ExecStop=/usr/bin/docker compose down
+
+Restart=on-failure
+RestartSec=10
+
+TimeoutStartSec=0
+TimeoutStopSec=120

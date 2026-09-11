@@ -1,6 +1,6 @@
 [Unit]
-Description=Start Airflow
-Wants=wait-for-password.service
+Description=Start Machine
+Requires=wait-for-password.service
 After=wait-for-password.service
 
 [Service]

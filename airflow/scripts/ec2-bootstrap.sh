@@ -87,17 +87,6 @@ login_ecr() {
     log "ECR login completed"
 }
 
-start_airflow() {
-    log "Starting Airflow..."
-
-    cd "${AIRFLOW_HOME}"
-
-    docker compose pull
-    docker compose up -d
-
-    log "Airflow started"
-}
-
 main() {
 
     log "Starting Airflow EC2 bootstrap..."
@@ -112,7 +101,7 @@ main() {
 
     login_ecr
 
-    start_airflow
+    sudo systemctl start airflow-docker.service
 
     log "Airflow EC2 bootstrap completed successfully."
 }

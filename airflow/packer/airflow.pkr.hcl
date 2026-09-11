@@ -87,6 +87,7 @@ build {
   provisioner "shell" {
     inline = [
       "sudo mkdir -p /opt/airflow",
+      "sudo mkdir -p /etc/airflow",
       "sudo mkdir -p /opt/airflow/scripts",
       "sudo mkdir -p /opt/airflow/dags",
       "sudo mkdir -p /opt/airflow/logs",
@@ -121,10 +122,20 @@ build {
   }
 
   provisioner "file" {
+    source      = "${path.root}/../scripts/airflow-docker.service"
+    destination = "/tmp/airflow-docker.service"
+  }
+
+  provisioner "file" {
     source      = "${path.root}/../scripts/startup.service"
     destination = "/tmp/startup.service"
   }
   
+  provisioner "file" {
+    source      = "${path.root}/../configs/airflow.conf"
+    destination = "/tmp/airflow.conf"
+  }
+
   provisioner "shell" {
     inline = [
       # Airflow scripts
@@ -135,9 +146,13 @@ build {
       # Docker Compose
       "sudo mv /tmp/docker-compose.yml /opt/airflow/docker-compose.yml",
 
+      # Airflow configuration
+      "sudo mv /tmp/airflow.conf /etc/airflow/airflow.conf",
+
       # Systemd services
       "sudo mv /tmp/wait-for-password.service /etc/systemd/system/wait-for-password.service",
       "sudo mv /tmp/startup.service /etc/systemd/system/startup.service",
+      "sudo mv /tmp/airflow-docker.service /etc/systemd/system/airflow-docker.service",
 
       # Permissions
       "sudo chmod 755 /opt/airflow/scripts/ec2-bootstrap.sh",
@@ -150,7 +165,8 @@ build {
       # Reload systemd
       "sudo systemctl daemon-reload",
       "sudo systemctl enable wait-for-password.service",
-      "sudo systemctl enable startup.service"
+      "sudo systemctl enable startup.service",
+      "sudo systemctl enable airflow-docker.service"
     ]
   }
 }

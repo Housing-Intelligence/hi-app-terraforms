@@ -32,9 +32,18 @@ resource "aws_instance" "airflow" {
 
   associate_public_ip_address = true
 
+  key_name = "test"
+
   vpc_security_group_ids = [
     aws_security_group.airflow_ec2_sg.id
   ]
+
+  root_block_device {
+    volume_size           = var.ec2_parameters["root_volume_size"]
+    volume_type           = "gp3"
+    encrypted             = true
+    delete_on_termination = true
+  }
 
   iam_instance_profile = data.aws_iam_instance_profile.airflow.name
 
@@ -49,7 +58,7 @@ resource "aws_instance" "airflow" {
     mkdir -p /etc/airflow
 
     # Provide runtime configuration for systemd services
-    cat > /etc/airflow/airflow.conf <<'CONFIG'
+    cat >> /etc/airflow/airflow.conf <<'CONFIG'
     AIRFLOW_SECRET_ID=${aws_secretsmanager_secret.airflow.id}
     AIRFLOW_IMAGE_TAG=${var.airflow_image_tag}
     AWS_REGION=${var.aws_region}
